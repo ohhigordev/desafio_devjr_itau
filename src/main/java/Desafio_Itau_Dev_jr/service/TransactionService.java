@@ -26,17 +26,15 @@ public class TransactionService {
     private final List<TransacaoRequestDTO> transacoes = Collections.synchronizedList(new ArrayList<>());
 
     public void adicionarTransacao(TransacaoRequestDTO transacao){
-        // Validação: Campos obrigatórios ( caso o JSON venha incompleto)
+
         if(transacao.valor() == null || transacao.dataHora() == null){
             throw new UnprocessableEntityException("Campos obrigatórios não preenchidos");
         }
 
-        // Validação: Valor não pode ser negativo
         if (transacao.valor() < 0){
             throw new UnprocessableEntityException("O valor da transação não pode ser negativo");
         }
 
-        // Validação: não pode ser no futuro
         if(transacao.dataHora().isAfter(OffsetDateTime.now())){
             throw new UnprocessableEntityException("O valor da transação não pode ser no futuro");
         }
@@ -47,6 +45,8 @@ public class TransactionService {
     public EstatisticasResponseDTO calcularEstatistica(){
         log.info("Iniciando o cálculo de estatisticas para os últimos {} segundos.", tempoEstatistica);
 
+        long inicio = System.nanoTime();
+
         OffsetDateTime limiteTempo = OffsetDateTime.now().minusSeconds(tempoEstatistica);
 
         // Filtramos e calculamos tudo em uma única passagem (O(n))
@@ -55,8 +55,11 @@ public class TransactionService {
                 .mapToDouble(TransacaoRequestDTO::valor)
                 .summaryStatistics();
 
-        // Se não houver transações, stats.getCount() será 0 e os valores serão Infinity ou 0.
-        // Precisamos tratar para retornar exatamente 0.0 conforme o enunciado.
+        long fim = System.nanoTime();
+        long duracaoMs = (fim - inicio) / 1_000_000; 
+
+        log.info("Cálculo concluído em {} ms para {} transações", duracaoMs, stats.getCount());
+
         if (stats.getCount() == 0){
             return new EstatisticasResponseDTO(0L, 0.0, 0.0, 0.0, 0.0);
         }
