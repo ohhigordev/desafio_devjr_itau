@@ -3,6 +3,8 @@ package Desafio_Itau_Dev_jr.service;
 import Desafio_Itau_Dev_jr.dto.EstatisticasResponseDTO;
 import Desafio_Itau_Dev_jr.dto.TransacaoRequestDTO;
 import Desafio_Itau_Dev_jr.infrastructure.UnprocessableEntityException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.naming.Name;
@@ -13,7 +15,12 @@ import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 @Service
+@Slf4j
 public class TransactionService {
+
+
+    @Value("${api.estatistica.tempo-segundos}")
+    private int tempoEstatistica;
 
     // Lista thread-safe para armazenamento em memória
     private final List<TransacaoRequestDTO> transacoes = Collections.synchronizedList(new ArrayList<>());
@@ -38,7 +45,9 @@ public class TransactionService {
     }
 
     public EstatisticasResponseDTO calcularEstatistica(){
-        OffsetDateTime limiteTempo = OffsetDateTime.now().minusSeconds(60);
+        log.info("Iniciando o cálculo de estatisticas para os últimos {} segundos.", tempoEstatistica);
+
+        OffsetDateTime limiteTempo = OffsetDateTime.now().minusSeconds(tempoEstatistica);
 
         // Filtramos e calculamos tudo em uma única passagem (O(n))
         DoubleSummaryStatistics stats = transacoes.stream()
