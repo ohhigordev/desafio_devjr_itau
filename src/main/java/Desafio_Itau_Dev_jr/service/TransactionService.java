@@ -5,6 +5,7 @@ import Desafio_Itau_Dev_jr.dto.TransacaoRequestDTO;
 import Desafio_Itau_Dev_jr.infrastructure.UnprocessableEntityException;
 import org.springframework.stereotype.Service;
 
+import javax.naming.Name;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +37,7 @@ public class TransactionService {
         transacoes.add(transacao);
     }
 
-    public EstatisticasResponseDTO calcularEstatistca(){
+    public EstatisticasResponseDTO calcularEstatistica(){
         OffsetDateTime limiteTempo = OffsetDateTime.now().minusSeconds(60);
 
         // Filtramos e calculamos tudo em uma única passagem (O(n))
@@ -66,4 +67,8 @@ public class TransactionService {
         System.out.println("Histórico de transações limpo com sucesso.");
     }
 
+    // Método que usaremos no futuro para as estatísticas
+    public List<TransacaoRequestDTO> getTransacoes() {
+        return transacoes;
+    }
 }

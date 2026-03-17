@@ -4,7 +4,7 @@ public record EstatisticasResponseDTO(
         long count,
         Double sum,
         Double avg,
-        Double main,
+        Double min,
         Double max
 ) {
 }
