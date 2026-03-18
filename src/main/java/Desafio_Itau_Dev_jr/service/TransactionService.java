@@ -3,6 +3,7 @@ package Desafio_Itau_Dev_jr.service;
 import Desafio_Itau_Dev_jr.dto.EstatisticasResponseDTO;
 import Desafio_Itau_Dev_jr.dto.TransacaoRequestDTO;
 import Desafio_Itau_Dev_jr.infrastructure.UnprocessableEntityException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,11 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionService {
 
 
-    @Value("${api.estatistica.tempo-segundos}")
+
     private int tempoEstatistica;
 
     // Lista thread-safe para armazenamento em memória
@@ -56,7 +58,7 @@ public class TransactionService {
                 .summaryStatistics();
 
         long fim = System.nanoTime();
-        long duracaoMs = (fim - inicio) / 1_000_000; 
+        long duracaoMs = (fim - inicio) / 1_000_000;
 
         log.info("Cálculo concluído em {} ms para {} transações", duracaoMs, stats.getCount());
 
